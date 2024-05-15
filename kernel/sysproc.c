@@ -94,3 +94,9 @@ sys_uptime(void)
 uint64 sys_getyear(void) {
   return 1975;
 }
+
+// trace syscall
+uint64 sys_trace(void) {
+  argint(0, &(myproc()->trace_mask));
+  return 0;
+}
