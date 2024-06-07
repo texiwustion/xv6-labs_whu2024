@@ -94,3 +94,9 @@ sys_uptime(void)
 uint64 sys_getyear(void) {
   return 1975;
 }
+
+
+uint64 sys_freemem(void) {
+  return freebytes();
+}
+

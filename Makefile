@@ -119,6 +119,7 @@ UPROGS=\
 	$U/_cat\
 	$U/_echo\
 	$U/_forktest\
+	$U/_freemem\
 	$U/_grep\
 	$U/_getyear\
 	$U/_init\
