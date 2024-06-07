@@ -2571,6 +2571,23 @@ badarg(char *s)
   exit(0);
 }
 
+// called by "usertests malloc_t"
+void malloc_t(char* s) {
+	const int N = 1e4;
+	uint t1 = uptime();
+	char** ptr = malloc(N * sizeof(char*));
+	for (int i = 0; i < N - 1; ++i) {
+		ptr[i] = malloc((i + 1) * sizeof(char));
+	}
+	for (int i = N - 2; i >= 0; i -= 2) free(ptr[i]);
+	for (int i = N - 3; i >= 0; i -= 2) free(ptr[i]);
+	ptr[N - 1] = malloc(N * sizeof(char));
+	uint t2 = uptime();
+	printf("Malloc Test Cost %d Ticks\n", t2 - t1);
+	exit(0);
+}
+
+
 struct test {
   void (*f)(char *);
   char *s;
@@ -2635,6 +2652,7 @@ struct test {
   {sbrklast, "sbrklast"},
   {sbrk8000, "sbrk8000"},
   {badarg, "badarg" },
+  {malloc_t, "malloc_t" },
 
   { 0, 0},
 };
@@ -3044,6 +3062,8 @@ countfree()
   return n;
 }
 
+
+
 int
 drivetests(int quick, int continuous, char *justone) {
   do {
@@ -3073,6 +3093,9 @@ drivetests(int quick, int continuous, char *justone) {
   } while(continuous);
   return 0;
 }
+
+
+
 
 int
 main(int argc, char *argv[])
