@@ -115,3 +115,33 @@ void free(void *ap) {
   }
   freep = p;
 }
+
+// ??????, 65536 * 8B = 4=512KB
+#define FRAGMENT_THRESHOLD 65536
+
+void get_memory_fragments() {
+  unsigned fragment_count = 0; // ??????
+  unsigned total_fragments_size = 0; // ???????
+
+  if (freep == NULL) {
+    printf("No free memory blocks available.\n");
+    return;
+  }
+
+  Header *p = freep;
+
+  // ??????,????????????????
+  do {
+    if (p->s.size <= FRAGMENT_THRESHOLD / sizeof(Header)) {
+      fragment_count++;
+      total_fragments_size += p->s.size * sizeof(Header);
+    }
+    p = p->s.next;
+  } while (p != freep);
+
+  // ??????
+  printf("Number of fragments <= %d B: %d\n", FRAGMENT_THRESHOLD, fragment_count);
+  printf("Total fragments size <= %d B: %d B\n", FRAGMENT_THRESHOLD, total_fragments_size);
+}
+
+
