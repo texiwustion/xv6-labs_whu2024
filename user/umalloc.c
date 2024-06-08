@@ -240,7 +240,7 @@ void free(void *ptr) {
   freep = currp;
 }
 
-#define FRAGMENT_THRESHOLD 4096
+#define FRAGMENT_THRESHOLD 1024
 
 void get_memory_fragments() {
   unsigned fragment_count = 0; // ??????
