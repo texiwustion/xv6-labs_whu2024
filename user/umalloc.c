@@ -45,7 +45,7 @@ void *malloc(unsigned nbytes) {
   for (p = prevp->s.next; ; prevp = p, p = p->s.next) {
     if (p->s.size >= nunits) {
       // ??????????,????????
-      if (best_fit == NULL || p->s.size < best_fit->s.size) {
+      if (best_fit == NULL || p->s.size > best_fit->s.size) {
         best_fit = p;
         best_fit_prev = prevp;
       }
