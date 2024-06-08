@@ -2573,9 +2573,9 @@ badarg(char *s)
 
 // ??????????????
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {1024, 2048, 4096, 5120, 6144, 7168, 8192, 16384, 32768, 65536};
+  const int allocation_sizes[] = {10, 52, 100, 300, 700, 1025, 2049, 3022, 4097, 5120, 6144, 7168, 8192, 16384, 24333, 32768, 65536};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 30;
+  const int num_free_blocks = 80;
   const int N = 300;
 
   char** allocations = malloc(N * sizeof(char*));
@@ -2604,7 +2604,7 @@ void simulate_memory_operations() {
     }
   }
 
-  printf("simulate_memory_operations: Finished\n");
+  printf("simulate_memory_operations: Finished");
   
 }
 
