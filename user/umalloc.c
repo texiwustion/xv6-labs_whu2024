@@ -117,7 +117,7 @@ void free(void *ap) {
 }
 
 // ??????, 65536 * 8B = 4=512KB
-#define FRAGMENT_THRESHOLD 65536
+#define FRAGMENT_THRESHOLD 1024
 
 void get_memory_fragments() {
   unsigned fragment_count = 0; // ??????
