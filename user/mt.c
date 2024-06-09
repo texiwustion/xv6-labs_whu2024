@@ -87,6 +87,12 @@ void mutil() {
 }
 
 int main(int argc, char *argv[]) {
+	printf("\nWorse-Fit\n\n");
+	_mt();
+	printf("\nBest-Fit\n\n");
+	u_malloc = bf_malloc;
+	u_free = bf_free;
+	u_get_free = bf_get_memory_fragments;
 	_mt();
 	exit(0);
 }
