@@ -70,7 +70,6 @@ void *bf_malloc(unsigned nbytes) {
     p->s.size = nunits;
   }
 
-  freep = prevp;
   return (void *)(p + 1);
 }
 
@@ -93,27 +92,17 @@ void bf_free(void *ap) {
   Header *bp, *p;
 
   bp = (Header *)ap - 1;
-
-  for (p = freep; !(bp > p && bp < p->s.next); p = p->s.next)
-    if (p >= p->s.next && (bp > p || bp < p->s.next))
-      break;
-
+  p = freep;
   if (bp + bp->s.size == p->s.next) {
     bp->s.size += p->s.next->s.size;
     bp->s.next = p->s.next->s.next;
   } else {
     bp->s.next = p->s.next;
   }
-  if (p + p->s.size == bp) {
-    p->s.size += bp->s.size;
-    p->s.next = bp->s.next;
-  } else {
-    p->s.next = bp;
-  }
-  freep = p;
+  p->s.next = bp;
 }
 
-#define FRAGMENT_THRESHOLD 1024
+#define FRAGMENT_THRESHOLD 512
 
 void bf_get_memory_fragments() {
   unsigned fragment_count = 0;
