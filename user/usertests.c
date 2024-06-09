@@ -2608,6 +2608,21 @@ void simulate_memory_operations() {
   
 }
 
+// ??????? 128 MB ( 128 * 1024 * 1024 ??)
+#define TOTAL_MEMORY (128 * 1024 * 1024)
+
+void mutil() {
+    int free_memory = freemem();
+    int used_memory = TOTAL_MEMORY - free_memory;
+
+    printf("Total Memory: %d bytes\n", TOTAL_MEMORY);
+    printf("Free Memory: %d bytes\n", free_memory);
+    printf("Used Memory: %d bytes\n", used_memory);
+
+    float memory_utilization = ((float)used_memory / TOTAL_MEMORY) * 100;
+    printf("Memory Utilization: %.2f%%\n", memory_utilization);
+}
+
 // called by "usertests malloc_t"
 void malloc_t(char* s) {
 	const int N = 1e4;
@@ -2624,6 +2639,8 @@ void malloc_t(char* s) {
 
 	simulate_memory_operations();
 	get_memory_fragments();
+
+	mutil();
 	
 	exit(0);
 }
