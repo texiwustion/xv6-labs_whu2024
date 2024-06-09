@@ -2571,65 +2571,6 @@ badarg(char *s)
   exit(0);
 }
 
-// ??????????????
-void simulate_memory_operations() {
-  const int allocation_sizes[] = {1024, 2048, 4096, 5120, 6144, 7168, 8192, 16384, 32768, 65536};
-  const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 30;
-  const int N = 300;
-
-  char** allocations = malloc(N * sizeof(char*));
-
-  // Allocate memory
-  printf("simulate_memory_operations: Allocate memory\n");
-  for (int i = 0; i < num_free_blocks; i++) {
-    int size_index = i % num_allocations;
-    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
-  }
-
-  // Free some blocks to create fragment
-  printf("simulate_memory_operations: Free some blocks to create fragment\n");
-  for (int i = 0; i < num_free_blocks; i += 2) {
-    free(allocations[i]);
-  }
-
-  // Further allocate and free to create fragmentation
-  printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
-  for (int i = num_free_blocks; i < num_free_blocks + 20; i++) {
-    int size_index = i % num_allocations;
-    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
-    
-    if (i % 3 == 0) {
-      free(allocations[i]);
-    }
-  }
-
-  printf("simulate_memory_operations: Finished\n");
-  
-}
-
-// called by "usertests malloc_t"
-void malloc_t(char* s) {
-	const int N = 1e4;
-	uint t1 = uptime();
-	char** ptr = malloc(N * sizeof(char*));
-	for (int i = 0; i < N - 1; ++i) {
-		ptr[i] = malloc((i + 1) * sizeof(char));
-	}
-	for (int i = N - 2; i >= 0; i -= 2) free(ptr[i]);
-	for (int i = N - 3; i >= 0; i -= 2) free(ptr[i]);
-	ptr[N - 1] = malloc(N * sizeof(char));
-	uint t2 = uptime();
-	printf("Malloc Test Cost %d Ticks\n", t2 - t1);
-
-	simulate_memory_operations();
-	get_memory_fragments();
-	
-	exit(0);
-}
-
-
-
 struct test {
   void (*f)(char *);
   char *s;
@@ -2694,7 +2635,6 @@ struct test {
   {sbrklast, "sbrklast"},
   {sbrk8000, "sbrk8000"},
   {badarg, "badarg" },
-  {malloc_t, "malloc_t" },
 
   { 0, 0},
 };
