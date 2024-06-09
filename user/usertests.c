@@ -2571,18 +2571,23 @@ badarg(char *s)
   exit(0);
 }
 
-// ??????????????
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {1024, 2048, 4096, 5120, 6144, 7168, 8192, 16384, 32768, 65536};
+  const int allocation_sizes[] = {1, 2, 3, 6, 12, 24, 48, 96, 192, 384, 768, 1536, 3072, 6144, 12288, 24576, 49142, 100000};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 30;
+  const int num_free_blocks = 80;
   const int N = 300;
 
   char** allocations = malloc(N * sizeof(char*));
 
+  printf("simulate_memory_operations: Allocate Solid memory\n");
+  for (int i = 0; i < 30; i++) {
+    allocations[i] = malloc(512 * sizeof(char));
+    if (i % 2 == 0) free(allocations[i]);
+  }
+  
   // Allocate memory
   printf("simulate_memory_operations: Allocate memory\n");
-  for (int i = 0; i < num_free_blocks; i++) {
+  for (int i = 30; i < num_free_blocks; i++) {
     int size_index = i % num_allocations;
     allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
   }
@@ -2595,7 +2600,7 @@ void simulate_memory_operations() {
 
   // Further allocate and free to create fragmentation
   printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
-  for (int i = num_free_blocks; i < num_free_blocks + 20; i++) {
+  for (int i = num_free_blocks; i < num_free_blocks + 60; i++) {
     int size_index = i % num_allocations;
     allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
     
@@ -2604,7 +2609,7 @@ void simulate_memory_operations() {
     }
   }
 
-  printf("simulate_memory_operations: Finished\n");
+  printf("simulate_memory_operations: Finished");
   
 }
 
@@ -2619,8 +2624,8 @@ void mutil() {
     printf("Free Memory: %d bytes\n", free_memory);
     printf("Used Memory: %d bytes\n", used_memory);
 
-    float memory_utilization = ((float)used_memory / TOTAL_MEMORY) * 100;
-    printf("Memory Utilization: %.2f%%\n", memory_utilization);
+    int memory_utilization = ((uint64)used_memory * 100) / TOTAL_MEMORY;
+    printf("Memory Utilization: %d%%\n", memory_utilization);
 }
 
 // called by "usertests malloc_t"
