@@ -89,10 +89,23 @@ static Header *morecore(unsigned nu) {
 }
 
 void bf_free(void *ap) {
+  static uint s_called = 0;
   Header *bp, *p;
-
   bp = (Header *)ap - 1;
   p = freep;
+
+  ++s_called;
+  if (s_called == 10) {
+    Header *t = p;
+    while (t->s.next != freep) {
+      if (t + t->s.size == t->s.next) {
+        t->s.size += t->s.next->s.size;
+        t->s.next = t->s.next->s.next;
+      }
+      t = t->s.next;
+    }
+  }
+
   if (bp + bp->s.size == p->s.next) {
     bp->s.size += p->s.next->s.size;
     bp->s.next = p->s.next->s.next;
