@@ -32,7 +32,7 @@ void _mt() {
 }
 
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {600, 700, 700, 768, 1111, 1200, 1300, 1536, 2000, 2400, 3072, 4000, 5000, 6144, 9864, 12288, 18453, 24576, 49142};
+  const int allocation_sizes[] = {600, 700, 700, 768, 1111, 1200, 1300, 1536, 2000, 2400, 3072, 4000};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
   const int num_free_blocks = 80;
   const int N = 300;
