@@ -96,22 +96,19 @@ void bf_free(void *ap) {
 
   ++s_called;
   if (s_called == 10) {
-    Header *t = p;
-    while (t->s.next != freep) {
-      if (t + t->s.size == t->s.next) {
-        t->s.size += t->s.next->s.size;
-        t->s.next = t->s.next->s.next;
+    Header *t = p, *u = p->s.next;
+    while (u != freep) {
+      if (t + t->s.size == u) {
+        t->s.size += u->s.size;
+        t->s.next = u->s.next;
       }
-      t = t->s.next;
+      else t = u;
+      u = u->s.next;
     }
+    s_called = 0;
   }
 
-  if (bp + bp->s.size == p->s.next) {
-    bp->s.size += p->s.next->s.size;
-    bp->s.next = p->s.next->s.next;
-  } else {
-    bp->s.next = p->s.next;
-  }
+  bp->s.next = p->s.next;
   p->s.next = bp;
 }
 
@@ -131,7 +128,7 @@ void bf_get_memory_fragments() {
   do {
     if (p->s.size <= FRAGMENT_THRESHOLD / sizeof(Header)) {
       fragment_count++;
-      printf("%d ", p->s.size * sizeof(Header));
+      printf("[%d]%d ", p->s.next, p->s.size * sizeof(Header));
       total_fragments_size += p->s.size * sizeof(Header);
     }
     p = p->s.next;
