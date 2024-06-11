@@ -32,47 +32,41 @@ void _mt() {
 }
 
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {49142, 384, 192, 3, 1, 3072, 6, 100000, 48, 2, 24, 768, 6144, 96, 12288, 12, 1536, 24576};
+  const int allocation_sizes[] = {600, 700, 700, 768, 1111, 1200, 1300, 1536, 2000, 2400, 3072, 4000, 5000, 6144, 9864, 12288, 18453, 24576, 49142};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 110;
+  const int num_free_blocks = 80;
   const int N = 300;
 
-  char** allocations = u_malloc(N * sizeof(char*));
-
-  printf("simulate_memory_operations: Allocate Solid memory\n");
-  for (int i = 0; i < 30; i++) {
-    allocations[i] = u_malloc(512 * sizeof(char));
-    if (i % 2 == 0) u_free(allocations[i]);
-  }
+  char** allocations = malloc(N * sizeof(char*));
   
   // Allocate memory
   printf("simulate_memory_operations: Allocate memory\n");
   for (int i = 30; i < num_free_blocks; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
   }
 
   // Free some blocks to create fragment
   printf("simulate_memory_operations: Free some blocks to create fragment\n");
-  for (int i = 30; i < num_free_blocks; i += 2) {
-    u_free(allocations[i]);
+  for (int i = 0; i < num_free_blocks; i += 2) {
+    free(allocations[i]);
   }
 
   // Further allocate and free to create fragmentation
   printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
   for (int i = num_free_blocks; i < num_free_blocks + 60; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
     
     if (i % 3 == 0) {
-      u_free(allocations[i]);
+      free(allocations[i]);
     }
   }
 
-  mutil();
   printf("simulate_memory_operations: Finished");
   
 }
+
 
 void mutil() {
     int free_memory = freemem();

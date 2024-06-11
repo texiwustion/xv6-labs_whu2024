@@ -103,7 +103,7 @@ void wf_free(void *ap) {
   p->s.next = bp;
 }
 
-#define FRAGMENT_THRESHOLD 512
+#define FRAGMENT_THRESHOLD 1024
 
 void wf_get_memory_fragments() {
   unsigned fragment_count = 0;
