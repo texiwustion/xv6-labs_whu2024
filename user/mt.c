@@ -41,7 +41,7 @@ void simulate_memory_operations() {
   
   // Allocate memory
   printf("simulate_memory_operations: Allocate memory\n");
-  for (int i = 30; i < num_free_blocks; i++) {
+  for (int i = 0; i < num_free_blocks; i++) {
     int size_index = i % num_allocations;
     allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
   }
