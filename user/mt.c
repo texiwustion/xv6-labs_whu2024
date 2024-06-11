@@ -15,6 +15,7 @@ free_func_t u_free = wf_free;
 get_free_func_t u_get_free = wf_get_memory_fragments;
 
 void _mt() {
+	u_get_free();
 	const int N = 1e4;
 	uint t1 = uptime();
 	char** ptr = u_malloc(N * sizeof(char*));
@@ -32,38 +33,30 @@ void _mt() {
 }
 
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {600, 700, 700, 768, 1111, 1200, 1300, 1536, 2000, 2400, 3072, 4000};
+  const int allocation_sizes[] = {666, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512, 16};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
   const int num_free_blocks = 80;
-  const int N = 300;
 
-  char** allocations = malloc(N * sizeof(char*));
-  
   // Allocate memory
   printf("simulate_memory_operations: Allocate memory\n");
   for (int i = 0; i < num_free_blocks; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
-  }
-
-  // Free some blocks to create fragment
-  printf("simulate_memory_operations: Free some blocks to create fragment\n");
-  for (int i = 0; i < num_free_blocks; i += 2) {
-    free(allocations[i]);
+    char* a = malloc(allocation_sizes[size_index] * sizeof(char));
+    if (i % 2 == 0) free(a);
   }
 
   // Further allocate and free to create fragmentation
   printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
   for (int i = num_free_blocks; i < num_free_blocks + 60; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = malloc(allocation_sizes[size_index] * sizeof(char));
+    char* a = malloc(allocation_sizes[size_index] * sizeof(char));
     
     if (i % 3 == 0) {
-      free(allocations[i]);
+      free(a);
     }
   }
 
-  printf("simulate_memory_operations: Finished");
+  printf("simulate_memory_operations: Finished\n");
   
 }
 
