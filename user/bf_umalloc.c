@@ -3,7 +3,9 @@
 #include "user/user.h"
 #include "kernel/param.h"
 
-#define NALLOC 4096  
+#define NALLOC 4096
+#define MAX_QUICK_LIST_SIZE 128 * 1024 // 128KB
+#define QUICK_LIST_COUNT (MAX_QUICK_LIST_SIZE / 2 + 1)
 
 #ifdef NULL
 #undef NULL
@@ -25,16 +27,50 @@ typedef union header Header;
 static Header base;
 static Header *freep = NULL;
 
+// 快表数组，每个元素指向相应大小的空闲块链表头
+static Header *quick_list[QUICK_LIST_COUNT] = {NULL};
+
 static Header *morecore(unsigned nu);
 void bf_free(void *ap);
 
+// 将快表索引转化为大小，以2倍幂形式
+static inline unsigned get_quick_list_index(unsigned size) {
+  return size / 2;
+}
+
+// 添加到快表
+void add_to_quick_list(Header *block) {
+  unsigned index = get_quick_list_index(block->s.size * sizeof(Header));
+  if (index < QUICK_LIST_COUNT) {
+    block->s.next = quick_list[index];
+    quick_list[index] = block;
+  }
+}
+
+// 从快表中删除并返回块
+Header *remove_from_quick_list(unsigned nunits) {
+  unsigned index = get_quick_list_index(nunits * sizeof(Header))/2;
+  if (index < QUICK_LIST_COUNT && quick_list[index]) {
+    Header *block = quick_list[index];
+    quick_list[index] = block->s.next;
+    return block;
+  }
+  return NULL;
+}
+
 void *bf_malloc(unsigned nbytes) {
   Header *p, *prevp;
-  Header *best_fit = NULL; 
-  Header *best_fit_prev = NULL; 
+  Header *best_fit = NULL;
+  Header *best_fit_prev = NULL;
   unsigned nunits;
 
   nunits = ((nbytes + sizeof(Header) - 1) / sizeof(Header)) + 1;
+
+  // 尝试从快表中分配
+  Header *quick_block = remove_from_quick_list(nunits);
+  if (quick_block) {
+    return (void *)(quick_block + 1);
+  }
 
   if (freep == NULL) {
     base.s.next = freep = &base;
@@ -93,6 +129,13 @@ void bf_free(void *ap) {
   Header *bp, *p;
 
   bp = (Header *)ap - 1;
+
+  // 尝试将块添加到快表
+  unsigned size = bp->s.size * sizeof(Header);
+  if (size <= MAX_QUICK_LIST_SIZE) {
+    add_to_quick_list(bp);
+    return;
+  }
 
   for (p = freep; !(bp > p && bp < p->s.next); p = p->s.next)
     if (p >= p->s.next && (bp > p || bp < p->s.next))
