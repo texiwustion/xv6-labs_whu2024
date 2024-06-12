@@ -127,6 +127,7 @@ void cff_get_memory_fragments() {
       fragment_count++;
       total_fragments_size += p->s.size * sizeof(Header);
     }
+    printf(" [#%d %d] ", p, p->s.size);
     p = p->s.next;
   } while (p != freep);
 

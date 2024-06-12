@@ -108,7 +108,7 @@ void free(void *ptr) {
   freep = currp;
 }
 
-#define FRAGMENT_THRESHOLD 1024
+#define FRAGMENT_THRESHOLD 4096
 
 void get_memory_fragments() {
   unsigned fragment_count = 0;
@@ -126,6 +126,7 @@ void get_memory_fragments() {
       fragment_count++;
       total_fragments_size += p->s.size * sizeof(Header);
     }
+    printf(" [#%d %d] ", p, p->s.size);
     p = p->s.next;
   } while (p != freep);
 
