@@ -24,54 +24,39 @@ void _mt() {
 	for (int i = N - 2; i >= 0; i -= 2) u_free(ptr[i]);
 	for (int i = N - 3; i >= 0; i -= 2) u_free(ptr[i]);
 	ptr[N - 1] = u_malloc(N * sizeof(char));
+	u_free(ptr[N - 1]);
 	uint t2 = uptime();
 	printf("Malloc Test Cost %d Ticks\n", t2 - t1);
 
 	simulate_memory_operations();
 	u_get_free();
+
 }
 
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {49142, 384, 192, 3, 1, 3072, 6, 100000, 48, 2, 24, 768, 6144, 96, 12288, 12, 1536, 24576};
+  const int allocation_sizes[] = {10, 52, 100, 300, 700, 1025, 2049, 3022, 4097, 5120, 6144, 7168, 8192, 16384, 24333, 32768, 65536};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 110;
-  const int N = 300;
+  const int num_free_blocks = 160;
 
-  char** allocations = u_malloc(N * sizeof(char*));
-
-  printf("simulate_memory_operations: Allocate Solid memory\n");
-  for (int i = 0; i < 30; i++) {
-    allocations[i] = u_malloc(512 * sizeof(char));
-    if (i % 2 == 0) u_free(allocations[i]);
-  }
-  
   // Allocate memory
   printf("simulate_memory_operations: Allocate memory\n");
-  for (int i = 30; i < num_free_blocks; i++) {
+  for (int i = 0; i < num_free_blocks; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
-  }
-
-  // Free some blocks to create fragment
-  printf("simulate_memory_operations: Free some blocks to create fragment\n");
-  for (int i = 30; i < num_free_blocks; i += 2) {
-    u_free(allocations[i]);
+    char *p = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    if (i % 2 == 0) u_free(p);
   }
 
   // Further allocate and free to create fragmentation
   printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
-  for (int i = num_free_blocks; i < num_free_blocks + 60; i++) {
+  for (int i = num_free_blocks; i < num_free_blocks + 40; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    char *p = u_malloc(allocation_sizes[size_index] * sizeof(char));
     
-    if (i % 3 == 0) {
-      u_free(allocations[i]);
-    }
+    if (i % 3 == 0) u_free(p);
   }
 
   mutil();
-  printf("simulate_memory_operations: Finished");
-  
+  printf("simulate_memory_operations: Finished\n");
 }
 
 void mutil() {

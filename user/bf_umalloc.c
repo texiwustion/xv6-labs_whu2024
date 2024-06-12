@@ -113,7 +113,7 @@ void bf_free(void *ap) {
   freep = p;
 }
 
-#define FRAGMENT_THRESHOLD 1024
+#define FRAGMENT_THRESHOLD 4096
 
 void bf_get_memory_fragments() {
   unsigned fragment_count = 0;
@@ -131,9 +131,11 @@ void bf_get_memory_fragments() {
       fragment_count++;
       total_fragments_size += p->s.size * sizeof(Header);
     }
+    printf(" [#%d %d] ", p, p->s.size);
     p = p->s.next;
   } while (p != freep);
+  printf("\n");
 
-  printf("Number of fragments <= %dB: %d\n", FRAGMENT_THRESHOLD, fragment_count);
+  printf("Number of fragments <= %dB: %d\n", FRAGMENT_THRESHOLD, fragment_count - 1);
   printf("Total fragments size <= %dB: %dB\n", FRAGMENT_THRESHOLD, total_fragments_size);
 }
