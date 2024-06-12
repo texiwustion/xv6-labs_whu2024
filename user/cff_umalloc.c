@@ -109,7 +109,7 @@ void cff_free(void *ptr) {
 
 }
 
-#define FRAGMENT_THRESHOLD 1024
+#define FRAGMENT_THRESHOLD 4096
 
 void cff_get_memory_fragments() {
   unsigned fragment_count = 0;

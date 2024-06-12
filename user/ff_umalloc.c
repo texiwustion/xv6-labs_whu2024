@@ -108,7 +108,7 @@ void ff_free(void *ptr) {
   // freep = currp; // in First-Fit, Never change freep from first block
 }
 
-#define FRAGMENT_THRESHOLD 1024
+#define FRAGMENT_THRESHOLD 4096
 
 void ff_get_memory_fragments() {
   unsigned fragment_count = 0;

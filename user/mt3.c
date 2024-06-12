@@ -32,46 +32,51 @@ void _mt() {
 }
 
 void simulate_memory_operations() {
-  const int allocation_sizes[] = {49142, 384, 192, 3, 1, 3072, 6, 100000, 48, 2, 24, 768, 6144, 96, 12288, 12, 1536, 24576};
+  const int allocation_sizes[] = {10, 52, 100, 300, 700, 1025, 2049, 3022, 4097, 5120, 6144, 7168, 8192, 16384, 24333, 32768, 65536};
   const int num_allocations = sizeof(allocation_sizes) / sizeof(allocation_sizes[0]);
-  const int num_free_blocks = 110;
-  const int N = 300;
+  const int num_initial_allocations = 80;
+  const int num_fragmentation_rounds = 120;
 
-  char** allocations = u_malloc(N * sizeof(char*));
+  void *allocated_blocks[num_initial_allocations];
 
-  printf("simulate_memory_operations: Allocate Solid memory\n");
-  for (int i = 0; i < 30; i++) {
-    allocations[i] = u_malloc(512 * sizeof(char));
-    if (i % 2 == 0) u_free(allocations[i]);
-  }
-  
-  // Allocate memory
-  printf("simulate_memory_operations: Allocate memory\n");
-  for (int i = 30; i < num_free_blocks; i++) {
+  // Step 1: Initial large allocations to set up the stage
+  printf("simulate_memory_operations: Initial large allocations\n");
+  for (int i = 0; i < num_initial_allocations; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    allocated_blocks[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    if (allocated_blocks[i] == NULL) {
+      printf("Out of memory during initial allocation\n");
+      return;
+    }
+    //printf("Allocated (#%d, %d)\n", i, allocation_sizes[size_index]);
   }
 
-  // Free some blocks to create fragment
-  printf("simulate_memory_operations: Free some blocks to create fragment\n");
-  for (int i = 30; i < num_free_blocks; i += 2) {
-    u_free(allocations[i]);
+  // Step 2: Free half of the initially allocated blocks to create large free spaces
+  printf("simulate_memory_operations: Freeing some initial blocks to create fragmentation\n");
+  for (int i = 0; i < num_initial_allocations; i += 2) {
+    u_free(allocated_blocks[i]);
+    //printf("Freed (#%d)\n", i);
   }
 
-  // Further allocate and free to create fragmentation
-  printf("simulate_memory_operations: Further allocate and free to create fragmentation\n");
-  for (int i = num_free_blocks; i < num_free_blocks + 60; i++) {
+  // Step 3: Further allocate and free to create more fine-grained fragmentation
+  printf("simulate_memory_operations: Further allocation and free cycles\n");
+  for (int i = 0; i < num_fragmentation_rounds; i++) {
     int size_index = i % num_allocations;
-    allocations[i] = u_malloc(allocation_sizes[size_index] * sizeof(char));
-    
+    char *p = u_malloc(allocation_sizes[size_index] * sizeof(char));
+    if (p == NULL) {
+      printf("Out of memory during fragmentation allocation\n");
+      return;
+    }
+    //printf("Allocated (#%d, %d)\n", i, allocation_sizes[size_index]);
+
     if (i % 3 == 0) {
-      u_free(allocations[i]);
+      u_free(p);
+      //printf("Freed (#%d, %d)\n", i, allocation_sizes[size_index]);
     }
   }
 
   mutil();
-  printf("simulate_memory_operations: Finished");
-  
+  printf("simulate_memory_operations: Finished\n");
 }
 
 void mutil() {
