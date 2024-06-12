@@ -2,6 +2,7 @@
 #include "user/user.h"
 
 #define TOTAL_MEMORY (128 * 1024 * 1024) // Physical Memeory 128MB
+#define NULL 0
 
 typedef void* (*malloc_func_t)(uint);
 typedef void (*free_func_t)(void*);
