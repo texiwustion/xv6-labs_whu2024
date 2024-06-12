@@ -84,28 +84,9 @@ static Header *morecore(unsigned nunits) {
 void free(void *ptr) {
   Header *insertp, *currp;
   insertp = ((Header *)ptr) - 1;
-
-  for (currp = freep; !((currp < insertp) && (insertp < currp->s.next)); currp = currp->s.next) {
-    if ((currp >= currp->s.next) && ((currp < insertp) || (insertp < currp->s.next))) {
-      break;
-    }
-  }
-
-  if ((insertp + insertp->s.size) == currp->s.next) {
-    insertp->s.size += currp->s.next->s.size;
-    insertp->s.next = currp->s.next->s.next;
-  } else {
-    insertp->s.next = currp->s.next;
-  }
-
-  if ((currp + currp->s.size) == insertp) {
-    currp->s.size += insertp->s.size;
-    currp->s.next = insertp->s.next;
-  } else {
-    currp->s.next = insertp;
-  }
-
-  freep = currp;
+  currp = freep;
+  insertp->s.next = currp->s.next;
+  currp->s.next = insertp;
 }
 
 #define FRAGMENT_THRESHOLD 4096
@@ -126,7 +107,7 @@ void get_memory_fragments() {
       fragment_count++;
       total_fragments_size += p->s.size * sizeof(Header);
     }
-    printf(" [#%d %d] ", p, p->s.size);
+   // printf(" [#%d %d] ", p, p->s.size);
     p = p->s.next;
   } while (p != freep);
 
